@@ -1,8 +1,8 @@
 {
-  "name": "cashflow-dashboard",
+  "name": "",
   "version": "0.0.1",
   "private": true,
-  "homepage":"https://bakroe112.github.io/cashflow-dashboard",
+  "homepage":"https://bakroe112.github.io/n8n-frontend",
   "type": "module",
   "scripts": {
     "deploy": "gh-pages -d dist",
