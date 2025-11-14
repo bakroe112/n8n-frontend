@@ -2,7 +2,7 @@
   "name": "n8n-frontend",
   "version": "0.0.1",
   "private": true,
-  "homepage":"https://bakroe112.github.io/n8n-frontend",
+  "homepage":"https://bakroe112.github.io/",
   "type": "module",
   "scripts": {
     "deploy": "gh-pages -d dist",
