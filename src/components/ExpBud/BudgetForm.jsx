@@ -14,13 +14,13 @@ function BudgetForm() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [years, setYears] = useState([]); // để lưu các năm có dữ liệu
-  const API_URL = "backend.bakroe.site";
+  const API_URL = "app.bakroe.site:4000";
   const API_LOCAL = "10.60.129.96:4000";
 
   const fetchBudgets = async () => {
     try {
       const res = await axios.get(
-        `https://${API_URL}/api/budgets/${year}/${month}`
+        `http://${API_URL}/api/budgets/${year}/${month}`
       );
       setBudgets(res.data);
     } catch (err) {

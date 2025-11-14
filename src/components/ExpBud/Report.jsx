@@ -12,12 +12,12 @@ import {
 function Reports() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
-  const API_URL = "backend.bakroe.site";
+  const API_URL = "app.bakroe.site:4000";
 
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`https://${API_URL}/api/reports/latest`);
+      const res = await axios.get(`http://${API_URL}/api/reports/latest`);
       if (res.data) {
         setReport(res.data);
       } else {

@@ -14,13 +14,13 @@ function ExpenseForm() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [years, setYears] = useState([]); // để lưu các năm có dữ liệu
-  const API_URL = "backend.bakroe.site";
+  const API_URL = "app.bakroe.site:4000";
 
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(`https://${API_URL}/api/budgets`);
+        const res = await axios.get(`http://${API_URL}/api/budgets`);
         const unique = [...new Set(res.data.map((b) => b.category))];
         setCategories(unique);
         if (unique.length > 0) setCategory(unique[0]);
