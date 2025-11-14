@@ -12,4 +12,8 @@ export const itemRouter = createBrowserRouter([
       { path: "/Buget", element: <Budget />, children: [] },
     ],
   },
-]);
+],
+  {
+    basename: "/n8n-frontend",  // 👈 THÊM DÒNG NÀY
+  }
+);
