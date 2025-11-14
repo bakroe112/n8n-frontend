@@ -14,6 +14,6 @@ export const itemRouter = createBrowserRouter([
   },
 ],
   {
-    basename: "/n8n-frontend",  // 👈 THÊM DÒNG NÀY
+    basename: "/n8n-frontend",
   }
 );

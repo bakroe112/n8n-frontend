@@ -27,11 +27,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build --if-present
     - run: npm test
-    - name: Deploy with gh-pages
+    - run: npm run build
+    - name: Get SSH Key and set permissions
       run: |
-        git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-        npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+    - name: Deploy using SCP
+      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST}}:~/n8n-frontend
+    - name: Restart Server
+      run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/n8n-frontend && npm install && pm2 restart 0"
