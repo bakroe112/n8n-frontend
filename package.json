@@ -5,7 +5,7 @@
   "homepage":"https://bakroe112.github.io/cashflow-dashboard",
   "type": "module",
   "scripts": {
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "test": "echo 'No tests yet'",
