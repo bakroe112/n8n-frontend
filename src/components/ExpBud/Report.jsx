@@ -12,7 +12,7 @@ import {
 function Reports() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
-  const API_URL = "app.bakroe.site:4000";
+  const API_URL = "app.bakroe.site";
 
   const fetchReport = async () => {
     setLoading(true);

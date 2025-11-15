@@ -1,5 +1,5 @@
 // src/lib/api.js
-const API_URL = "app.bakroe.site:4000";
+const API_URL = "app.bakroe.site";
 const API_LOCAL = "10.60.129.96:4000";
 
 export async function fetchSummary() {
