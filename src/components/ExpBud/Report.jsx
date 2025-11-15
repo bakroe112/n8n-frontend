@@ -17,7 +17,7 @@ function Reports() {
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://${API_URL}/api/reports/latest`);
+      const res = await axios.get(`https://${API_URL}/api/reports/latest`);
       if (res.data) {
         setReport(res.data);
       } else {

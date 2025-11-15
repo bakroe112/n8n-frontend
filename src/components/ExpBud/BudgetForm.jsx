@@ -20,7 +20,7 @@ function BudgetForm() {
   const fetchBudgets = async () => {
     try {
       const res = await axios.get(
-        `http://${API_URL}/api/budgets/${year}/${month}`
+        `https://${API_URL}/api/budgets/${year}/${month}`
       );
       setBudgets(res.data);
     } catch (err) {

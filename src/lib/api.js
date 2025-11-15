@@ -4,7 +4,7 @@ const API_LOCAL = "10.60.129.96:4000";
 
 export async function fetchSummary() {
   try {
-    const res = await fetch(`http://${API_URL}/api/summary`);
+    const res = await fetch(`https://${API_URL}/api/summary`);
     if (!res.ok) throw new Error("Failed to fetch summary");
     return await res.json();
   } catch (err) {
@@ -15,7 +15,7 @@ export async function fetchSummary() {
 
 export async function fetchTransactions() {
   try {
-    const res = await fetch(`http://${API_URL}/api/transactions`);
+    const res = await fetch(`https://${API_URL}/api/transactions`);
     if (!res.ok) throw new Error("Failed to fetch transactions");
     return await res.json();
   } catch (err) {

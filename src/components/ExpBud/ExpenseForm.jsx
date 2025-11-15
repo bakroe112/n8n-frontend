@@ -20,7 +20,7 @@ function ExpenseForm() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(`http://${API_URL}/api/budgets`);
+        const res = await axios.get(`https://${API_URL}/api/budgets`);
         const unique = [...new Set(res.data.map((b) => b.category))];
         setCategories(unique);
         if (unique.length > 0) setCategory(unique[0]);
