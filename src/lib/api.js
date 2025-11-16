@@ -23,3 +23,14 @@ export async function fetchTransactions() {
     throw err;
   }
 }
+
+export async function fetchInvoices() {
+    try {
+    const res = await fetch(`https://${API_URL}/api/invoices`);
+    if (!res.ok) throw new Error("Failed to fetch transactions");
+    return await res.json();
+  } catch (err) {
+    console.error("Error fetching transactions:", err);
+    throw err;
+  }
+}

@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import DashboardCashflow from "../page/DashBoardCashflow";
 import { Layout } from "../layout/Layout";
 import Budget from "../page/Budget";
+import InvoicesDashboard from "../page/InvoicesDashboard";
 
 export const itemRouter = createBrowserRouter([
   {
@@ -10,6 +11,7 @@ export const itemRouter = createBrowserRouter([
     children: [
       { path: "/", element: <DashboardCashflow />, children: [] },
       { path: "/Buget", element: <Budget />, children: [] },
+      { path: "/Invoice", element: <InvoicesDashboard />, children: [] },
     ],
   },
 ]
