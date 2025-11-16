@@ -10,7 +10,7 @@ export const itemRouter = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: "/", element: <DashboardCashflow />, children: [] },
-      { path: "/Buget", element: <Budget />, children: [] },
+      { path: "/Budget", element: <Budget />, children: [] },
       { path: "/Invoice", element: <InvoicesDashboard />, children: [] },
     ],
   },

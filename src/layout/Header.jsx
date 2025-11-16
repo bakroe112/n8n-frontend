@@ -15,7 +15,7 @@ export const Header = () => {
                 Cashflow
               </h2>
               |
-              <h2 className="cursor-pointer" onClick={() => navigate("/Buget")}>
+              <h2 className="cursor-pointer" onClick={() => navigate("/Budget")}>
                 Budget
               </h2>
               |

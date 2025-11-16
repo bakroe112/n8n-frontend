@@ -45,6 +45,30 @@ function BudgetForm() {
     fetchYears();
   }, []);
 
+  // Function POST dữ liệu lên server
+  const postBudgetToServer = async (budgetData) => {
+    try {
+      const response = await axios.post(`https://${API_URL}/api/budgets`, budgetData);
+      console.log("✅ POST thành công:", response.data);
+      return response.data;
+    } catch (err) {
+      console.error("❌ Lỗi POST:", err);
+      throw err;
+    }
+  };
+
+  // Function PUT (update) dữ liệu trên server
+  const putBudgetToServer = async (id, budgetData) => {
+    try {
+      const response = await axios.put(`https://${API_URL}/api/budgets/${id}`, budgetData);
+      console.log("✅ PUT thành công:", response.data);
+      return response.data;
+    } catch (err) {
+      console.error("❌ Lỗi PUT:", err);
+      throw err;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!category || !amount || isNaN(amount) || Number(amount) <= 0) {
@@ -52,21 +76,21 @@ function BudgetForm() {
       return;
     }
 
+    const budgetData = {
+      category,
+      amount: Number(amount),
+      date: new Date(date),
+    };
+
     try {
       if (editingId) {
-        await axios.put(`https://${API_URL}/api/budgets/${editingId}`, {
-          category,
-          amount: Number(amount),
-          date: new Date(date), // ép lại Date cho chắc
-        });
+        // Cập nhật dữ liệu có sẵn
+        await putBudgetToServer(editingId, budgetData);
         alert("✏️ Cập nhật thành công!");
         setEditingId(null);
       } else {
-        await axios.post(`https://${API_URL}/api/budgets`, {
-          category,
-          amount: Number(amount),
-          date: new Date(date), // ép lại Date cho chắc
-        });
+        // Thêm dữ liệu mới
+        await postBudgetToServer(budgetData);
         alert("✅ Thêm thành công!");
       }
 
@@ -105,6 +129,71 @@ function BudgetForm() {
   return (
     <div className="page-container">
       <div className="form-grid">
+        {/* FORM SECTION */}
+        <div className="form-section">
+          <h2 className="form-title">
+            <FaPiggyBank /> {editingId ? "✏️ Chỉnh sửa Ngân Sách" : "➕ Thêm Ngân Sách Mới"}
+          </h2>
+          <form onSubmit={handleSubmit} className="budget-form">
+            <div className="form-group">
+              <label htmlFor="category">Danh mục:</label>
+              <input
+                type="text"
+                id="category"
+                placeholder="VD: Ăn uống, Mua sắm, Giao thông..."
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="amount">Số tiền (VND):</label>
+              <input
+                type="number"
+                id="amount"
+                placeholder="VD: 500000"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                min="1"
+                step="1000"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="date">Ngày:</label>
+              <input
+                type="date"
+                id="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary">
+                <FaSave /> {editingId ? "Cập nhật" : "Thêm mới"}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setEditingId(null);
+                    setCategory("");
+                    setAmount("");
+                    setDate(new Date().toISOString().split("T")[0]);
+                  }}
+                >
+                  Hủy
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+
         {/* TABLE */}
         <div className="table-section">
           <h2 className="table-title">📊 Danh sách Ngân Sách</h2>
