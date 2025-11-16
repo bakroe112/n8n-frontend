@@ -34,3 +34,23 @@ export async function fetchInvoices() {
     throw err;
   }
 }
+
+// POST /api/invoices/batch
+// invoices: array các invoice cần tạo
+export async function createInvoicesBatch(invoices) {
+  try {
+    const res = await fetch(`https://${API_URL}/api/invoices/batch`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ invoices }),
+    });
+
+    if (!res.ok) throw new Error("Failed to create invoices");
+    return await res.json(); // { invoices: [...] }
+  } catch (err) {
+    console.error("Error creating invoices:", err);
+    throw err;
+  }
+}

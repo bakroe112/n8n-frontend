@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { fetchInvoices } from "../lib/api.js"; // GET /api/invoices => { invoices: [...] }
+import { fetchInvoices, createInvoicesBatch } from "../lib/api.js"; // GET + POST
 
 // Card nhỏ cho phần summary
 function StatCard({ label, value, sub }) {
@@ -105,6 +105,17 @@ export default function InvoicesDashboard() {
 
   const [search, setSearch] = useState("");
   const [customerFilter, setCustomerFilter] = useState("");
+
+  // state cho form tạo invoice mới
+  const [form, setForm] = useState({
+    code: "",
+    customer_name: "",
+    description: "",
+    due_date: "",
+    amount: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
 
   // lấy data từ API
   useEffect(() => {
@@ -224,12 +235,147 @@ export default function InvoicesDashboard() {
     [overdueInvoices]
   );
 
+  // handle change form
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // submit form -> POST /api/invoices/batch
+  const handleCreateInvoice = async (e) => {
+    e.preventDefault();
+    setFormError("");
+
+    if (!form.code || !form.customer_name || !form.due_date || !form.amount) {
+      setFormError(
+        "Vui lòng nhập đầy đủ Mã, Khách hàng, Ngày đến hạn và Số tiền."
+      );
+      return;
+    }
+
+    const newInvoice = {
+      code: form.code.trim(),
+      customer_name: form.customer_name.trim(),
+      description: form.description.trim(),
+      due_date: form.due_date, // input type="date" => "YYYY-MM-DD"
+      amount: Number(form.amount) || 0,
+      // status mặc định PENDING ở backend
+    };
+
+    setSaving(true);
+    try {
+      const res = await createInvoicesBatch([newInvoice]);
+      const inserted = res.invoices || [];
+      // thêm vào danh sách hiện tại để update UI luôn
+      setInvoices((prev) => [...prev, ...inserted]);
+
+      // reset form
+      setForm({
+        code: "",
+        customer_name: "",
+        description: "",
+        due_date: "",
+        amount: "",
+      });
+    } catch (err) {
+      console.error("Create invoice error:", err);
+      setFormError("Tạo giao dịch thất bại, vui lòng thử lại.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) return <div className="p-6">Đang tải dữ liệu...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
 
   return (
     <div className="">
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        {/* FORM TẠO GIAO DỊCH */}
+        <section className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+          <h2 className="text-lg font-semibold">Tạo giao dịch mới</h2>
+          <form
+            className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end"
+            onSubmit={handleCreateInvoice}
+          >
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Mã</label>
+              <input
+                type="text"
+                name="code"
+                value={form.code}
+                onChange={handleFormChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                placeholder="INV001"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">
+                Khách hàng
+              </label>
+              <input
+                type="text"
+                name="customer_name"
+                value={form.customer_name}
+                onChange={handleFormChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                placeholder="Công ty ABC"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Mô tả</label>
+              <input
+                type="text"
+                name="description"
+                value={form.description}
+                onChange={handleFormChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                placeholder="Thanh toán dịch vụ ..."
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">
+                Ngày đến hạn
+              </label>
+              <input
+                type="date"
+                name="due_date"
+                value={form.due_date}
+                onChange={handleFormChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">
+                Số tiền
+              </label>
+              <input
+                type="number"
+                name="amount"
+                value={form.amount}
+                onChange={handleFormChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                placeholder="1000000"
+                min="0"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={saving}
+              className="md:col-span-5 inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {saving ? "Đang tạo..." : "Tạo giao dịch"}
+            </button>
+          </form>
+          {formError && (
+            <p className="text-xs text-red-600 mt-1">{formError}</p>
+          )}
+        </section>
+
         {/* SUMMARY */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <StatCard
@@ -324,8 +470,7 @@ export default function InvoicesDashboard() {
           <InvoiceTable
             title="Giao dịch đã thanh toán"
             invoices={[...paidInvoices].sort(
-              (a, b) =>
-                (b.paid?.getTime() || 0) - (a.paid?.getTime() || 0)
+              (a, b) => (b.paid?.getTime() || 0) - (a.paid?.getTime() || 0)
             )}
           />
         </section>
