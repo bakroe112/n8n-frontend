@@ -148,7 +148,7 @@ export default function TransactionsTable({ rows }) {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="border rounded-md px-2 h-8 text-xs bg-white"
+              className="border rounded-md h-8 text-xs bg-white"
             >
               <option value="">Tất cả</option>
               {Array.from({ length: 12 }).map((_, i) => {
@@ -168,7 +168,7 @@ export default function TransactionsTable({ rows }) {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="border rounded-md px-2 h-8 text-xs bg-white"
+              className="border rounded-md  h-8 text-xs bg-white"
             >
               <option value="">Tất cả</option>
               {years.map((y) => (
