@@ -32,6 +32,8 @@ export default function DashboardCashflow() {
     loadData();
   }, []);
 
+  console.log("summary", summary);
+
   const banks = useMemo(
     () => [...new Set(transactions.map((t) => t.bank_name))],
     [transactions]
