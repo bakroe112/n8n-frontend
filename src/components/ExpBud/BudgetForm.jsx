@@ -17,6 +17,25 @@ function BudgetForm() {
   const API_URL = "backend.bakroe.site";
   const API_LOCAL = "10.60.129.96:4000";
 
+  const categories = [
+    "Thịt, cá, trứng, hải sản",
+    "Rau, củ, nấm, trái cây",
+    "Dầu ăn, nước chấm, gia vị",
+    "Gạo, bột, đồ khô",
+    "Mì, miến, cháo, phở",
+    "Sữa các loại",
+    "Kem, sữa chua",
+    "Thực phẩm đông mát",
+    "Bia, nước giải khát",
+    "Cà phê, trà, mật ong",
+    "Bánh kẹo các loại",
+    "Khô chế biến sẵn",
+    "Chăm sóc cá nhân",
+    "Vệ sinh nhà cửa",
+    "Sản phẩm mẹ và bé",
+    "Đồ dùng gia đình",
+  ];
+
   const fetchBudgets = async () => {
     try {
       const res = await axios.get(
@@ -48,7 +67,10 @@ function BudgetForm() {
   // Function POST dữ liệu lên server
   const postBudgetToServer = async (budgetData) => {
     try {
-      const response = await axios.post(`https://${API_URL}/api/budgets`, budgetData);
+      const response = await axios.post(
+        `https://${API_URL}/api/budgets`,
+        budgetData
+      );
       console.log("✅ POST thành công:", response.data);
       return response.data;
     } catch (err) {
@@ -60,7 +82,10 @@ function BudgetForm() {
   // Function PUT (update) dữ liệu trên server
   const putBudgetToServer = async (id, budgetData) => {
     try {
-      const response = await axios.put(`https://${API_URL}/api/budgets/${id}`, budgetData);
+      const response = await axios.put(
+        `https://${API_URL}/api/budgets/${id}`,
+        budgetData
+      );
       console.log("✅ PUT thành công:", response.data);
       return response.data;
     } catch (err) {
@@ -132,19 +157,25 @@ function BudgetForm() {
         {/* FORM SECTION */}
         <div className="form-section">
           <h2 className="form-title">
-            <FaPiggyBank /> {editingId ? "✏️ Chỉnh sửa Ngân Sách" : "➕ Thêm Ngân Sách Mới"}
+            <FaPiggyBank />{" "}
+            {editingId ? "✏️ Chỉnh sửa Ngân Sách" : "➕ Thêm Ngân Sách Mới"}
           </h2>
           <form onSubmit={handleSubmit} className="budget-form">
             <div className="form-group">
               <label htmlFor="category">Danh mục:</label>
-              <input
-                type="text"
+              <select
                 id="category"
-                placeholder="VD: Ăn uống, Mua sắm, Giao thông..."
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-              />
+              >
+                <option value="">-- Chọn danh mục --</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group">
@@ -156,7 +187,6 @@ function BudgetForm() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 min="1"
-                step="1000"
                 required
               />
             </div>
