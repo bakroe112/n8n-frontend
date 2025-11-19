@@ -251,6 +251,7 @@ export default function TransactionsTable({ rows }) {
             <tr className="text-left text-gray-500">
               <th className="py-2 pr-4">Ngày</th>
               <th className="py-2 pr-4">Ngân hàng</th>
+              <th className="py-2 pr-4">STK</th>
               <th className="py-2 pr-4">Mô tả</th>
               <th className="py-2 pr-4">Loại</th>
               <th className="py-2 pr-4">Số tiền</th>
@@ -262,6 +263,7 @@ export default function TransactionsTable({ rows }) {
               <tr key={r.id} className="border-t">
                 <td className="py-2 pr-4">{formatDate(r.date)}</td>
                 <td className="py-2 pr-4">{r.bank_name}</td>
+                <td className="py-2 pr-4">{r.account_number}</td>
                 <td className="py-2 pr-4">{r.description}</td>
                 <td className="py-2 pr-4">
                   <span
