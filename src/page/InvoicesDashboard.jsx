@@ -274,7 +274,8 @@ export default function InvoicesDashboard() {
     const newInvoice = {
       code: form.code.trim(),
       customer_name: form.customer_name.trim(),
-      customer_email: form.customer_email.trim(),
+      // Gửi đúng tên field backend đang dùng
+      email_customer: form.customer_email.trim(),
       description: form.description.trim(),
       due_date: form.due_date, // input type="date" => "YYYY-MM-DD"
       amount: Number(form.amount) || 0,
