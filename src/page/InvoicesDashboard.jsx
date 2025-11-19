@@ -30,6 +30,7 @@ function InvoiceTable({ title, invoices }) {
             <tr className="text-left">
               <th className="px-4 py-2">Mã</th>
               <th className="px-4 py-2">Khách hàng</th>
+              <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Mô tả</th>
               <th className="px-4 py-2">Ngày đến hạn</th>
               <th className="px-4 py-2">Số tiền</th>
@@ -40,7 +41,7 @@ function InvoiceTable({ title, invoices }) {
             {invoices.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   className="px-4 py-4 text-center text-gray-400 italic"
                 >
                   Không có giao dịch nào
@@ -58,6 +59,10 @@ function InvoiceTable({ title, invoices }) {
                     {inv.code || inv._id}
                   </td>
                   <td className="px-4 py-2">{inv.customer_name}</td>
+                  <td className="px-4 py-2">
+                    {/* ĐÃ CHUẨN HOÁ: luôn dùng customer_email */}
+                    {inv.customer_email || "—"}
+                  </td>
                   <td className="px-4 py-2 max-w-xs truncate">
                     {inv.description || "—"}
                   </td>
@@ -110,6 +115,7 @@ export default function InvoicesDashboard() {
   const [form, setForm] = useState({
     code: "",
     customer_name: "",
+    customer_email: "",
     description: "",
     due_date: "",
     amount: "",
@@ -144,6 +150,10 @@ export default function InvoicesDashboard() {
       const isPaid = status === "PAID";
       const isOverdue = !isPaid && due && due < now;
 
+      // 🔹 CHUẨN HOÁ EMAIL: gom về 1 field customer_email
+      const customer_email =
+        raw.customer_email || raw.email_customer || raw.email || "";
+
       return {
         ...raw,
         status,
@@ -151,15 +161,14 @@ export default function InvoicesDashboard() {
         paid,
         isPaid,
         isOverdue,
+        customer_email,
       };
     });
   }, [invoices, now]);
 
   const customers = useMemo(() => {
     return [
-      ...new Set(
-        enrichedInvoices.map((i) => i.customer_name).filter(Boolean)
-      ),
+      ...new Set(enrichedInvoices.map((i) => i.customer_name).filter(Boolean)),
     ];
   }, [enrichedInvoices]);
 
@@ -172,14 +181,14 @@ export default function InvoicesDashboard() {
       const text = (
         (inv.customer_name || "") +
         " " +
+        (inv.customer_email || "") +
+        " " +
         (inv.description || "") +
         " " +
         (inv.code || inv._id || inv.id || "")
       ).toLowerCase();
 
-      const matchSearch = search
-        ? text.includes(search.toLowerCase())
-        : true;
+      const matchSearch = search ? text.includes(search.toLowerCase()) : true;
 
       return matchCustomer && matchSearch;
     });
@@ -249,9 +258,15 @@ export default function InvoicesDashboard() {
     e.preventDefault();
     setFormError("");
 
-    if (!form.code || !form.customer_name || !form.due_date || !form.amount) {
+    if (
+      !form.code ||
+      !form.customer_name ||
+      !form.customer_email ||
+      !form.due_date ||
+      !form.amount
+    ) {
       setFormError(
-        "Vui lòng nhập đầy đủ Mã, Khách hàng, Ngày đến hạn và Số tiền."
+        "Vui lòng nhập đầy đủ Mã, Khách hàng, Email, Ngày đến hạn và Số tiền."
       );
       return;
     }
@@ -259,6 +274,7 @@ export default function InvoicesDashboard() {
     const newInvoice = {
       code: form.code.trim(),
       customer_name: form.customer_name.trim(),
+      customer_email: form.customer_email.trim(),
       description: form.description.trim(),
       due_date: form.due_date, // input type="date" => "YYYY-MM-DD"
       amount: Number(form.amount) || 0,
@@ -276,6 +292,7 @@ export default function InvoicesDashboard() {
       setForm({
         code: "",
         customer_name: "",
+        customer_email: "",
         description: "",
         due_date: "",
         amount: "",
@@ -298,7 +315,7 @@ export default function InvoicesDashboard() {
         <section className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
           <h2 className="text-lg font-semibold">Tạo giao dịch mới</h2>
           <form
-            className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end"
+            className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end"
             onSubmit={handleCreateInvoice}
           >
             <div>
@@ -323,6 +340,19 @@ export default function InvoicesDashboard() {
                 onChange={handleFormChange}
                 className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
                 placeholder="Công ty ABC"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">
+                Email khách hàng
+              </label>
+              <input
+                type="email"
+                name="customer_email"
+                value={form.customer_email}
+                onChange={handleFormChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                placeholder="customer@example.com"
               />
             </div>
             <div>
@@ -366,7 +396,7 @@ export default function InvoicesDashboard() {
             <button
               type="submit"
               disabled={saving}
-              className="md:col-span-5 inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="md:col-span-6 inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {saving ? "Đang tạo..." : "Tạo giao dịch"}
             </button>
@@ -424,13 +454,11 @@ export default function InvoicesDashboard() {
             </div>
           </div>
           <div className="w-full md:w-64">
-            <label className="block text-xs text-gray-500 mb-1">
-              Tìm kiếm
-            </label>
+            <label className="block text-xs text-gray-500 mb-1">Tìm kiếm</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
-              placeholder="Mã, khách hàng, mô tả..."
+              placeholder="Mã, khách hàng, email, mô tả..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -446,8 +474,8 @@ export default function InvoicesDashboard() {
             </span>
           </h2>
           <p className="text-sm text-gray-500">
-            Đây là danh sách các hóa đơn quá hạn, bạn có thể dùng để gửi email
-            / SMS nhắc khách hàng (xử lý logic phía backend).
+            Đây là danh sách các hóa đơn quá hạn, bạn có thể dùng để gửi email /
+            SMS nhắc khách hàng (xử lý logic phía backend).
           </p>
           <InvoiceTable
             title="Hóa đơn quá hạn"
